@@ -19,13 +19,13 @@ spl_autoload_register(function(string $classname) {
  * 
  */
 foreach([
-	__DIR__ . '/#Foundation/RouterHttp.php',
-	__DIR__ . '/#Foundation/RouterHttp/Response.php',
-	__DIR__ . '/#Foundation/RouterHttp/Response/Template.php',
-	__DIR__ . '/#Foundation/Request.php',
-	__DIR__ . '/#Foundation/PDOFactory.php',
-	__DIR__ . '/#Foundation/Database/Entity.php',
-	__DIR__ . '/#Foundation/Database/Dashboard.php',
+	__DIR__ . '/#TheFoundation/RouterHttp.php',
+	__DIR__ . '/#TheFoundation/RouterHttp/Response.php',
+	__DIR__ . '/#TheFoundation/RouterHttp/Response/Template.php',
+	__DIR__ . '/#TheFoundation/Request.php',
+	__DIR__ . '/#TheFoundation/PDOFactory.php',
+	__DIR__ . '/#TheFoundation/Database/Entity.php',
+	__DIR__ . '/#TheFoundation/Database/Dashboard.php',
 ] as $classname)
 	require_once $classname;
 ?>

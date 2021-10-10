@@ -3,10 +3,10 @@
 /**
  *
  */
-namespace TheFoundation\Database;
+namespace src\Database;
 
-use TheFoundation\RouterHttp;
-use TheFoundation\RouterHttp\Response\Template;
+use src\RouterHttp;
+use src\RouterHttp\Response\Template;
 
 /**
  * 

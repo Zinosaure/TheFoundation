@@ -3,7 +3,7 @@
 /**
  *
  */
-namespace TheFoundation\Database;
+namespace src\Database;
 
 /**
  *

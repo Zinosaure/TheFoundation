@@ -9,7 +9,7 @@ define('APPLICATION_PATH', __DIR__ . '/../');
 *
 */
 spl_autoload_register(function(string $classname) {
-    if (file_exists($filename = __DIR__ . '/packages/' . str_replace('\\', '/', $classname) . '.php'))
+    if (file_exists($filename = APPLICATION_PATH . '/packages/' . str_replace('\\', '/', $classname) . '.php'))
         return require_once $filename;
 
     return false;

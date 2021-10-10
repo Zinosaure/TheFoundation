@@ -3,7 +3,7 @@
 /**
  * 
  */
-namespace Foundation\RouterHttp\Response;
+namespace TheFoundation\RouterHttp\Response;
 
 /**
  * 

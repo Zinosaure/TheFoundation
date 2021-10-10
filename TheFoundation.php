@@ -3,7 +3,7 @@
 /**
 *
 */
-define('APPLICATION_PATH', __DIR__ . '/');
+define('APPLICATION_PATH', __DIR__ . '/../');
 
 /**
 *

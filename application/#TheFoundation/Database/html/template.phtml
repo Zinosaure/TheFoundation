@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title><?= $match ? $match::DASHBOARD_TITLE : '-' ?> | Dashboard</title>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="">
+<link rel="shortcut icon" type="image/x-icon" href="/public/images/favicon-la-isla.png" />
+<link rel="stylesheet" href="/public/css-js/bootstrap/bootstrap.min.css?v=5.0" />
+<link rel="stylesheet" href="/public/css-js/bootswatch/lumen.min.css?v=4.6" />
+<style>
+thead tr th:nth-child(1),
+thead tr th:nth-child(2),
+tbody tr td:nth-child(1),
+tbody tr td:nth-child(2) {
+    position: sticky;
+    left: 0;
+	width: 10px;
+    z-index: 9999;
+}
+tbody tr td img {
+	max-width: 250px;
+}
+</style>
+</head>
+<body>
+	<nav class="navbar navbar-expand mb-4 p-3 justify-content-between">
+  		<a class="navbar-brand" href="/dashboard/">Salut, George Lucas!</a>
+	</nav>
+
+    <div class="container-fluid">
+		<div class="row">
+            <div class="col-3 mb-4"> 
+				<div class="border shadow-sm bg-light p-3">
+					<?php foreach($navigations as $h6 => $items) {
+						echo sprintf('<h6 class="font-weight-bold mt-3">&#9885; %s</h6>', $h6);
+
+						foreach($items as $classname) {
+							echo '<div class="pl-3">';
+							echo sprintf('<a class="%s" href="/dashboard/%s">&#8627; %s</a><br />', $match == $classname ? 'font-weight-bold text-info' : null, $classname::__id(), htmlspecialchars($classname::DASHBOARD_TITLE));
+							echo '</div>';
+						}
+					} ?>
+				</div>
+			</div>
+			<div class="col-9">
+				<?= $match ? $match::__html() : null ?>
+			</div>
+		</div>
+	</div>
+</body>
+<script src="/public/css-js/jquery.min.js?v=3.6.0"></script>
+<script src="/public/css-js/popper.min.js?v=2.9.2"></script>
+<script src="/public/css-js/bootstrap/bootstrap.bundle.min.js?v=5.0"></script>
+<script src="/public/css-js/bootstrap/bootstrap.min.js?v=5.0"></script>
+<script src="/public/css-js/holder.js?v=2.9.8"></script>
+<script>
+const ui = {
+	init: function() {
+		$('html body').append(this.zpopup.$bg.append(this.zpopup.$content));
+		$('html head').append($('<style/>', { 
+    		type: 'text/css', 
+    		html: `.gifLoading { 
+				border: 5px solid #f3f3f3; 
+				border-top: 5px solid #3498db; 
+				border-radius: 50%; 
+				width: 40px; 
+				height: 40px; 
+				margin: 15px auto; 
+				animation: spin 2s linear infinite; 
+			}
+
+			@keyframes spin { 
+				0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } 
+			}
+
+			body #zpopup-bg {
+				display: none;
+				position: fixed;
+				width: 100vw;
+				height: 100vh;
+				top: 0;
+				left: 0;
+				z-index: 2;
+				overflow: auto;
+				background: #acacac96;
+			}
+
+			body #zpopup-bg > #zpopup-content {
+				position: relative;
+				top: 50%; 
+				left: 50%; 
+				transform: translate(-50%, -50%); 
+				overflow: auto;
+				width: 240px; 
+				min-width: 240px; 
+				max-width: 95vw; 
+				min-height: 100px;
+				max-height: 95vh;
+				padding: 15px 15px 15px 25px; 
+				cursor: default;
+				background: #ffffff;
+				border-radius: 3px;
+			}
+
+			body #zpopup-bg > #zpopup-content .popover, 
+			body #zpopup-bg > #zpopup-content .tooltip {
+				z-index: 10000 !important;
+			}`,
+		}));
+
+		$('div.nphotos').each(function(i, e) {
+			var $this = $(e);
+			var name = $this.data('name');
+			var items = $this.data('items');
+			var html = '';
+
+			for (var i in items) {
+				var uniqid = 'i-' + Math.floor(Math.random() * Date.now()); 
+
+				html += `<li class="list-item mt-3 pr-1">
+					<input type="file" class="form-control" name="${name}[${uniqid}][nphotosfilename]" accept="image/png, image/jpg, image/jpeg, image/gif" onchange="return (function(event) {
+						if (!event.target.files.length)
+							return $('span#uploadmark-${uniqid}').html('[WILL NOT CHANGE]');
+
+						$('span#uploadmark-${uniqid}').html(event.target.files[0].name);
+					})(event);" />
+					<div class="mt-1">
+						<small class="help-text">
+							${items[i].filename.split(/[\\/]/).pop()} &rarr; <span id="uploadmark-${uniqid}">[WILL NOT CHANGE]</span>
+						</small>
+					</div>
+					<textarea class="form-control mt-2" name="${name}[${uniqid}][caption]" rows="2">${items[i].caption}</textarea>
+				</li>`;
+			}
+
+			$this.find('ul.nphotos-ul').html(html);
+		});
+
+		$('div.nitems').each(function(i, e) {
+			var $this = $(e);
+			var name = $this.data('name');
+			var items = $this.data('items');
+			var is_selectbox = $this.hasClass('is-selectbox');
+			var html = '';
+
+			for (var i in items) {
+				if (is_selectbox) {
+					html += `<li class="list-item">
+						<input type="hidden" name="${name}[]" value="${i}" />
+						<span onclick="return ui.nitems.update(this, '${name}');">${items[i]}</span>
+					</li>`;
+				} else {
+					html += `<li class="list-item">
+						<input type="hidden" name="${name}[]" value="${items[i]}" />
+						<span onclick="return ui.nitems.update(this, '${name}');">${items[i]}</span>
+					</li>`;
+				}
+			}
+
+			$this.find('ul.nitems-ul').html(html);
+		});
+
+		return this;
+	},
+	zpopup: {
+		$bg: $('<div/>', { id: 'zpopup-bg' }),
+		$content: $('<div/>', { id: 'zpopup-content', html: '<div class="gifLoading"></div>' }),
+		update: function(html, settings) {
+			var settings = $.extend({ 
+				width: 500, 
+				buttons: [
+					{
+						text: 'OK',
+						class: 'btn btn-primary py-1 px-4',
+						onclick: 'return ui.zpopup.close();',
+					}
+				],
+			}, settings || {});
+
+			ui.zpopup.$content.animate({ width: settings.width }, 500, function () {
+				if (typeof settings.buttons === 'object' && settings.buttons.length > 0) {
+					html += `<div class="border-top mt-4 pt-2 text-right">`;
+					for (var i in settings.buttons) {
+						settings.buttons[i] = $.extend({
+							text: 'OK',
+							class: 'btn btn-primary py-1 px-4 ml-2',
+							onclick: 'return ui.zpopup.close();',
+						}, settings.buttons[i]);
+
+						html += `<button type="button" class="${settings.buttons[i].class}" onclick="${settings.buttons[i].onclick}">
+							${settings.buttons[i].text}
+						</button>`;
+					}
+					
+					html += `</div>`;
+				}
+
+				$(this).html(html);
+			});
+		},
+		open: function(data, settings) {
+			if (typeof data === 'string' || data instanceof String) {
+				ui.zpopup.$bg.fadeIn(500, function() {
+					ui.zpopup.update(data, settings);
+				});
+			} else if (typeof data === 'object' || data instanceof Object) {
+				ui.zpopup.$content.html('<div class="gifLoading"></div>').animate({ width: 240 }, 500, function () {
+					ui.zpopup.$bg.fadeIn(500, function() {
+						return $.ajax($.extend({ 
+							method: 'POST',
+							success: function(response) {
+								return ui.zpopup.update(response, settings);
+							},
+							error: function(jqXHR, textStatus, errorThrown) {
+								return ui.zpopup.update(`Request failed: ${jqXHR.status} (${jqXHR.statusText})`, settings);
+							},
+						}, data));
+					});
+				});
+			}
+		},
+		close: function() {
+			ui.zpopup.$content.html('<div class="gifLoading"></div>').animate({ width: 240 }, 500, function () {
+				ui.zpopup.$bg.fadeOut(500);
+			});
+		},
+	},
+	nitems: {
+		text: {
+			push: function(button, name) {
+				var $ul = $(button).parents('div.nitems').find('ul.nitems-ul');
+				var $li = $(`<li class="list-item">
+					<input type="hidden" name="${name}[]" value="" />
+					<span onclick="return ui.nitems.update(this);"></span>
+				</li>`);
+		
+				$ul.append($li).animate({scrollTop: $ul.prop('scrollHeight')}, 500);
+				$li.find('span').click();
+			},
+		},
+		select: {
+			push: function(button, name) {
+				var $ul = $(button).parents('div.nitems').find('ul.nitems-ul');
+				var $li = $(`<li class="list-item">
+					<input type="hidden" name="${name}[]" value="" />
+					<span onclick="return ui.nitems.update(this);"></span>
+				</li>`);
+		
+				$ul.append($li).animate({scrollTop: $ul.prop('scrollHeight')}, 500);
+				$li.find('span').click();
+			},
+		},
+		update: function(span) {
+			var $span = $(span).addClass('text-primary text-decoration-underline');
+
+			$span.parents('div.nitems').find('input:not([type="hidden"]), textarea, select').prop('disabled', false).each(function(i, e) {
+				var $input = $(e);
+				var $hidden = $span.parents('li.list-item').find('input');
+				
+				$input
+					.val($hidden.val())
+					.focus()
+					.off('input')
+					.on('input', function() {
+						$hidden.val($input.val());
+						
+						if ($input.prop('tagName') == 'SELECT')
+							$span.text($input.find('option:selected').text());
+						else
+							$span.text($input.val());
+					})
+					.on('blur', function() {
+						$input.prop('disabled', true).val('');
+						$span.removeClass('text-primary text-decoration-underline');
+
+						$(span).parents('div.nitems').find('ul.nitems-ul').find('li.list-item').each(function(i, e) {
+							if ($(e).find('span').text().trim() == '')
+								$(e).remove();
+						});
+					});
+			});
+		},
+	}
+}.init();
+</script>
+</html>

@@ -12,7 +12,7 @@ class PDOFactory {
 
     /**
      * @param \PDO $PDO - instance of PDO
-     * @param array $dbstruct - [
+     * @param array $struct - [
      *      <table_name> => [
      *          'columns' => [
      *              <column_name> => <column_datatype>,
@@ -27,21 +27,27 @@ class PDOFactory {
      * @return bool
      * @throws \PDOException
      */
-    public static function initdb(\PDO $PDO, array $dbstruct): bool {
-        $query_string = null;
+    public static function initdb(\PDO $PDO, array $struct): bool {
+        $query_string = [];
 
-        foreach ($dbstruct as $table => $details) {
-            if (empty($details['columns'] ?? []))
-                continue;
+        foreach ($struct as $table => $details) {
+            $query_string[] = sprintf('CREATE TABLE IF NOT EXISTS `%s` (', $table);
+            $columns = [];
 
-            $query_string .= sprintf('CREATE TABLE IF NOT EXISTS `%s` (', $table);
-            $query_string .= implode(', ', array_merge(
-                array_map(fn($name, $type) => sprintf('`%s` %s', $name, $type), array_keys($details['columns']), $details['columns']), $details['constraints'] ?? [])
-            );
-            $query_string .= '); ';
+            foreach ($details['columns'] as $name => $type)
+                $columns[] = sprintf('`%s` %s', $name, $type);
+            
+            $query_string[] = "\t" . implode(",\n\t", array_merge($columns, $details['constraints']));
+            $query_string[] = ');';
         }
 
-        return $PDO->exec($query_string);
+        try {
+            $PDO->exec(implode("\n", $query_string));
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
